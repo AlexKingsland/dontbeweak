@@ -1,0 +1,50 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace
+xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/.env
+fastlane/.env.default
+
+# Bundler
+.bundle/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary and generated files
+*.swp
+*.swo
+*~.nib
+*.mode1v3
+*.pbxuser
+
+# Keychain files (if applicable)
+*.keychain
+
+# Personal local settings
+.env
+*.local
+
