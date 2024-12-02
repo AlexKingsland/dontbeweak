@@ -21,7 +21,21 @@ struct ContentView: View {
         ScrollView {
             VStack(spacing: 20) {
                 // Quote Section
-                Text("Invest your money like Warren Buffet. Invest your time like a gambling addict.")
+                Text("Invest your money like Warren Buffet. Invest your time like someone who just discovered options trading.")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                Divider()
+                
+                // Life bar at the top
+                LifeBar(birthDate: birthDate, lifeExpectancyYears: lifeExpectancyYears, currentTime: currentTime)
+                    .padding()
+                
+                Divider()
+                
+                // Quote Section
+                Text("Your time is limited, so don't waste it living someone else's life.")
                     .font(.headline)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -68,10 +82,12 @@ struct ContentView: View {
             Divider()
             
             // Bottom Quote Section
-            Text("Be careful to not set your time horizon too short such that your actions are brash, or too long such that you live life as if you'll live forever.")
+            Text("Be careful to not lead a life as though you'll live forever.")
                 .font(.headline)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            
+            Divider()
         }
         .onAppear {
             setupInitialValues()
@@ -213,6 +229,71 @@ struct ContentView: View {
     }
 }
 
+
+struct LifeBar: View {
+    let birthDate: Date
+    let lifeExpectancyYears: Int
+    let currentTime: Date
+
+    var body: some View {
+        GeometryReader { geometry in
+            let totalWidth = geometry.size.width
+            let percentageLived = calculateLifeLivedPercentage()
+            let livedWidth = totalWidth * (percentageLived / 100)
+            let remainingWidth = totalWidth - livedWidth
+
+            ZStack {
+                // Background with border
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.2))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.black, lineWidth: 2)
+                    )
+
+                // Life bar
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .fill(Color.black)
+                        .frame(width: livedWidth, height: 20)
+                        .cornerRadius(10, corners: [.topLeft, .bottomLeft])
+                    Rectangle()
+                        .fill(Color.white)
+                        .frame(width: remainingWidth, height: 20)
+                        .cornerRadius(10, corners: [.topRight, .bottomRight])
+                }
+
+                // Overlay percentages
+                HStack {
+                    Text("\(String(format: "%.1f", percentageLived))%")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                        .frame(width: livedWidth, height: 20, alignment: .center)
+                    Spacer()
+                    Text("\(String(format: "%.1f", 100 - percentageLived))%")
+                        .font(.caption)
+                        .foregroundColor(.black)
+                        .frame(width: remainingWidth, height: 20, alignment: .center)
+                }
+                .padding(.horizontal, 5)
+            }
+        }
+        .frame(height: 30) // Increase height for better aesthetics
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+
+    // Calculate the percentage of life lived
+    private func calculateLifeLivedPercentage() -> Double {
+        let calendar = Calendar.current
+        let now = currentTime
+        let deathDate = calendar.date(byAdding: .year, value: lifeExpectancyYears, to: birthDate)!
+        let totalTime = deathDate.timeIntervalSince(birthDate)
+        let timeLived = now.timeIntervalSince(birthDate)
+        return (timeLived / totalTime) * 100
+    }
+}
+
 // TimerBox with Dynamic Numbers
 struct TimerBox: View {
     let unit: String
@@ -293,5 +374,25 @@ struct YearGrid: View {
         } else {
             return Color.clear
         }
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = 10.0
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
     }
 }
